@@ -7415,6 +7415,10 @@ void CompilerMSL::fix_up_shader_inputs_outputs()
 // Returns the Metal index of the resource of the specified type as used by the specified variable.
 uint32_t CompilerMSL::get_metal_resource_index(SPIRVariable &var, SPIRType::BaseType basetype)
 {
+	if (msl_options.explicit_push_constant_binding != UINT32_MAX && var.storage == StorageClassPushConstant) {
+		return msl_options.explicit_push_constant_binding;
+	}
+
 	auto &execution = get_entry_point();
 	auto &var_dec = ir.meta[var.self].decoration;
 	auto &var_type = get<SPIRType>(var.basetype);

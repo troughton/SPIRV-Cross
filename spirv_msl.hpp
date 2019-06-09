@@ -211,6 +211,9 @@ public:
 		// Requires MSL 2.1, use the native support for texel buffers.
 		bool texture_buffer_native = false;
 
+		// Explicitly sets the binding index to be used for push constants for all shader stages.
+		uint32_t explicit_push_constant_binding = UINT32_MAX;
+
 		bool is_ios()
 		{
 			return platform == iOS;

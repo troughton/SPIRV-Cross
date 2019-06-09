@@ -517,6 +517,7 @@ struct CLIArguments
 	bool msl_multiview = false;
 	bool msl_view_index_from_device_index = false;
 	bool msl_dispatch_base = false;
+	uint32_t msl_explicit_push_constant_binding = UINT32_MAX;
 	bool glsl_emit_push_constant_as_ubo = false;
 	bool glsl_emit_ubo_as_plain_uniforms = false;
 	bool vulkan_glsl_disable_ext_samplerless_texture_functions = false;
@@ -761,6 +762,7 @@ static string compile_iteration(const CLIArguments &args, std::vector<uint32_t> 
 		msl_opts.multiview = args.msl_multiview;
 		msl_opts.view_index_from_device_index = args.msl_view_index_from_device_index;
 		msl_opts.dispatch_base = args.msl_dispatch_base;
+		msl_opts.explicit_push_constant_binding = args.msl_explicit_push_constant_binding;
 		msl_comp->set_msl_options(msl_opts);
 		for (auto &v : args.msl_discrete_descriptor_sets)
 			msl_comp->add_discrete_descriptor_set(v);
@@ -1085,6 +1087,8 @@ static int main_inner(int argc, char *argv[])
 	cbs.add("--msl-view-index-from-device-index",
 	        [&args](CLIParser &) { args.msl_view_index_from_device_index = true; });
 	cbs.add("--msl-dispatch-base", [&args](CLIParser &) { args.msl_dispatch_base = true; });
+	cbs.add("--msl-explicit-push-constant-binding", 
+			[&args](CLIParser &parser) { args.msl_explicit_push_constant_binding = parser.next_uint(); });
 	cbs.add("--extension", [&args](CLIParser &parser) { args.extensions.push_back(parser.next_string()); });
 	cbs.add("--rename-entry-point", [&args](CLIParser &parser) {
 		auto old_name = parser.next_string();
