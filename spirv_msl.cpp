@@ -841,6 +841,29 @@ string CompilerMSL::compile()
 	fixup_image_load_store_access();
 
 	set_enabled_interface_variables(get_active_interface_variables());
+	if (msl_options.argument_buffers)
+	{
+		// If we're using argument buffers, we need to emit all bindings could be contained within an argument buffer.
+		const ShaderResources resources = get_shader_resources();
+		for (auto &resource : resources.uniform_buffers)
+			active_interface_variables.insert(resource.id);
+		
+		for (auto &resource : resources.storage_buffers)
+			active_interface_variables.insert(resource.id);
+		
+		for (auto &resource : resources.storage_images)
+			active_interface_variables.insert(resource.id);
+
+		for (auto &resource : resources.sampled_images)
+			active_interface_variables.insert(resource.id);
+
+		for (auto &resource : resources.separate_images)
+			active_interface_variables.insert(resource.id);
+
+		for (auto &resource : resources.separate_samplers)
+			active_interface_variables.insert(resource.id);
+	}
+
 	if (swizzle_buffer_id)
 		active_interface_variables.insert(swizzle_buffer_id);
 	if (buffer_size_buffer_id)
@@ -9879,8 +9902,15 @@ void CompilerMSL::analyze_argument_buffers()
 		});
 
 		uint32_t member_index = 0;
+		uint32_t previous_index = UINT32_MAX;
 		for (auto &resource : resources)
 		{
+			// TODO: implement some sort of checking that duplicate declarations have the same type.
+			if (resource.index == previous_index)
+				continue;
+
+			previous_index = resource.index;
+
 			auto &var = *resource.var;
 			auto &type = get_variable_data_type(var);
 			string mbr_name = ensure_valid_name(resource.name, "m");
