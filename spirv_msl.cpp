@@ -7503,7 +7503,7 @@ uint32_t CompilerMSL::get_metal_resource_index(SPIRVariable &var, SPIRType::Base
 	if (allocate_argument_buffer_ids)
 	{
 		// Allocate from a flat ID binding space.
-		resource_index = next_metal_resource_ids[desc_set];
+        resource_index = var_binding; // next_metal_resource_ids[desc_set];
 		next_metal_resource_ids[desc_set] += binding_stride;
 	}
 	else
